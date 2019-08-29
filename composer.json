@@ -1,0 +1,22 @@
+{
+	"name": "baraja-core/fio-payment-authorizator",
+	"description": "FIO payment authorizator.",
+	"homepage": "https://github.com/baraja-core/fio-payment-authorizator",
+	"authors": [
+		{
+			"name": "Jan Barášek",
+			"homepage": "https://baraja.cz"
+		}
+	],
+	"require": {
+		"php": ">=7.1.0",
+		"nette/caching": "^3.0",
+		"nette/utils": "^3.0"
+	},
+	"autoload": {
+		"classmap": [
+			"src/"
+		]
+	},
+	"minimum-stability": "stable"
+}

@@ -7,7 +7,6 @@ namespace Baraja;
 
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
-use Nette\Utils\Validators;
 
 class FioPaymentAuthorizator
 {
@@ -41,17 +40,31 @@ class FioPaymentAuthorizator
 	}
 
 	/**
-	 * @param int[] $unauthorizedVariables
+	 * Check list of unauthorized variable symbols, compare with read bank account list and authorize paid records.
+	 * For valid transaction user record must match price exactly or in given tolerance (default is +/- 1 CZK).
+	 *
+	 * Example:
+	 *    [19010017 => 250]
+	 *    Variable: 19010017
+	 *    Price: 250 CZK, accept <249, 251>
+	 *
+	 * @param int[]|float[] $unauthorizedVariables -> key is variable, value is expected price.
 	 * @param callable(Transaction $transaction) $callback
+	 * @param string $currency
+	 * @param float $tolerance
+	 *
 	 */
-	public function authOrders(array $unauthorizedVariables, callable $callback): void
+	public function authOrders(array $unauthorizedVariables, callable $callback, string $currency = 'CZK', float $tolerance = 1): void
 	{
-		assert(Validators::everyIs($unauthorizedVariables, 'int'));
-		$transactions = $this->process();
-
-		foreach ($transactions->getTransactions() as $transaction) {
-			if (\in_array($transaction->getVariableSymbol(), $unauthorizedVariables, true) === false) {
-				$callback($transaction);
+		foreach ($this->process()->getTransactions() as $transaction) {
+			if (($variable = $transaction->getVariableSymbol()) !== null && isset($unauthorizedVariables[$variable])) {
+				$price = (float) $unauthorizedVariables[$variable];
+				if ($transaction->getCurrency() !== $currency) { // Fix different currencies
+					$price = $this->convertCurrency($transaction->getCurrency(), $currency, $price);
+				}
+				if ($transaction->getPrice() - $price >= -$tolerance) { // Is price in tolerance?
+					$callback($transaction);
+				}
 			}
 		}
 	}
@@ -85,6 +98,19 @@ class FioPaymentAuthorizator
 		}
 
 		return $data;
+	}
+
+	/**
+	 * @param string $currentCurrency
+	 * @param string $expectedCurrency
+	 * @param float $price
+	 * @return float
+	 */
+	private function convertCurrency(string $currentCurrency, string $expectedCurrency, float $price): float
+	{
+		// TODO: Reserved for future use.
+
+		return $price;
 	}
 
 }

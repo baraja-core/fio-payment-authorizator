@@ -138,6 +138,26 @@ class Transaction
 	}
 
 	/**
+	 * @param int $variableSymbol
+	 * @return bool
+	 */
+	public function isVariableSymbol(int $variableSymbol): bool
+	{
+		return $this->variableSymbol === $variableSymbol || $this->isContainVariableSymbolInMessage($variableSymbol);
+	}
+
+	/**
+	 * @param int $variableSymbol
+	 * @return bool
+	 */
+	public function isContainVariableSymbolInMessage(int $variableSymbol): bool
+	{
+		$haystack = $this->userNotice . ' ' . $this->toMessage . ' ' . $this->message . ' ' . $this->comment;
+
+		return strpos($haystack, (string) $variableSymbol) !== false;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getId(): int

@@ -56,15 +56,29 @@ class FioPaymentAuthorizator
 	 */
 	public function authOrders(array $unauthorizedVariables, callable $callback, string $currency = 'CZK', float $tolerance = 1): void
 	{
-		foreach ($this->process()->getTransactions() as $transaction) {
-			if (($variable = $transaction->getVariableSymbol()) !== null && isset($unauthorizedVariables[$variable])) {
-				$price = (float) $unauthorizedVariables[$variable];
-				if ($transaction->getCurrency() !== $currency) { // Fix different currencies
-					$price = $this->convertCurrency($transaction->getCurrency(), $currency, $price);
+		$transactions = $this->process()->getTransactions();
+		$variables = array_keys($unauthorizedVariables);
+
+		$process = static function (float $price, Transaction $transaction) use ($callback, $currency, $tolerance): void {
+			if ($transaction->getCurrency() !== $currency) { // Fix different currencies
+				$price = $this->convertCurrency($transaction->getCurrency(), $currency, $price);
+			}
+			if ($transaction->getPrice() - $price >= -$tolerance) { // Is price in tolerance?
+				$callback($transaction);
+			}
+		};
+
+		foreach ($transactions as $transaction) {
+			$variable = null;
+			foreach ($variables as $currentVariable) {
+				if ($transaction->isVariableSymbol((int) $currentVariable) === true) {
+					$variable = (int) $currentVariable;
+					break;
 				}
-				if ($transaction->getPrice() - $price >= -$tolerance) { // Is price in tolerance?
-					$callback($transaction);
-				}
+			}
+
+			if ($variable !== null) {
+				$process((float) $unauthorizedVariables[$variable], $transaction);
 			}
 		}
 	}
@@ -74,6 +88,8 @@ class FioPaymentAuthorizator
 	 */
 	private function loadData(): string
 	{
+		static $staticCache = [];
+
 		$year = (int) date('Y');
 		if (($month = (int) date('m') - 1) === 0) {
 			$year--;
@@ -84,12 +100,19 @@ class FioPaymentAuthorizator
 			. '/' . $year . '-' . $month . '-01/' . date('Y-m-d')
 			. '/transactions.csv';
 
+		if (isset($staticCache[$url]) === true) {
+			return $staticCache[$url];
+		}
+
 		if ($this->cache !== null && ($cache = $this->cache->load($url)) !== null) {
+			$staticCache[$url] = $cache;
+
 			return $cache;
 		}
 
 		$data = file_get_contents($url);
 
+		$staticCache[$url] = $data;
 		if ($this->cache !== null) {
 			$this->cache->save($url, $data, [
 				Cache::EXPIRE => '15 minutes',

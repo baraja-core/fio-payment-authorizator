@@ -52,7 +52,6 @@ class FioPaymentAuthorizator
 	 * @param callable(Transaction $transaction) $callback
 	 * @param string $currency
 	 * @param float $tolerance
-	 *
 	 */
 	public function authOrders(array $unauthorizedVariables, callable $callback, string $currency = 'CZK', float $tolerance = 1): void
 	{
@@ -110,7 +109,9 @@ class FioPaymentAuthorizator
 			return $cache;
 		}
 
-		$data = file_get_contents($url);
+		if (($data = file_get_contents($url)) === false) {
+			FioPaymentException::emptyResponse($url);
+		}
 
 		$staticCache[$url] = $data;
 		if ($this->cache !== null) {

@@ -83,6 +83,10 @@ class TransactionResult
 	{
 		$parser = explode("\n", Strings::normalize($data));
 
+		if (isset($parser[10]) === false) {
+			FioPaymentException::transactionDataAreBroken($data);
+		}
+
 		// Meta information parser
 		$line = static function (string $line): string {
 			return explode(';', $line, 2)[1] ?? '';

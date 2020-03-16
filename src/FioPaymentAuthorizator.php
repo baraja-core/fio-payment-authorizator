@@ -8,7 +8,7 @@ namespace Baraja;
 use Nette\Caching\Cache;
 use Nette\Caching\IStorage;
 
-class FioPaymentAuthorizator
+final class FioPaymentAuthorizator
 {
 
 	/**
@@ -23,12 +23,14 @@ class FioPaymentAuthorizator
 
 	/**
 	 * @param string $privateKey
-	 * @param IStorage|null $IStorage
+	 * @param IStorage|null $storage
 	 */
-	public function __construct(string $privateKey, ?IStorage $IStorage = null)
+	public function __construct(string $privateKey, ?IStorage $storage = null)
 	{
 		$this->privateKey = $privateKey;
-		$this->cache = $IStorage === null ? null : new Cache($IStorage, 'fio-payment-authorizator');
+		if ($storage !== null) {
+			$this->cache = new Cache($storage, 'fio-payment-authorizator');
+		}
 	}
 
 	/**
@@ -68,16 +70,11 @@ class FioPaymentAuthorizator
 		};
 
 		foreach ($transactions as $transaction) {
-			$variable = null;
 			foreach ($variables as $currentVariable) {
 				if ($transaction->isVariableSymbol((int) $currentVariable) === true) {
-					$variable = (int) $currentVariable;
+					$process((float) $unauthorizedVariables[(int) $currentVariable], $transaction);
 					break;
 				}
-			}
-
-			if ($variable !== null) {
-				$process((float) $unauthorizedVariables[$variable], $transaction);
 			}
 		}
 	}
@@ -104,9 +101,7 @@ class FioPaymentAuthorizator
 		}
 
 		if ($this->cache !== null && ($cache = $this->cache->load($url)) !== null) {
-			$staticCache[$url] = $cache;
-
-			return $cache;
+			return $staticCache[$url] = $cache;
 		}
 
 		if (($data = file_get_contents($url)) === false) {

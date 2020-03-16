@@ -8,7 +8,7 @@ namespace Baraja;
 use Nette\SmartObject;
 use Nette\Utils\DateTime;
 
-class Transaction
+final class Transaction
 {
 
 	use SmartObject;

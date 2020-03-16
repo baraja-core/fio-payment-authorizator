@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Baraja;
 
 
-class FioPaymentException extends \RuntimeException
+final class FioPaymentException extends \RuntimeException
 {
 
 	/**
@@ -13,7 +13,7 @@ class FioPaymentException extends \RuntimeException
 	 */
 	public static function emptyResponse(string $url): void
 	{
-		throw new self('Fio payment API response is empty.' . "\n" . 'URL: "' . $url . '".');
+		throw new self('Fio payment API response is empty, URL "' . $url . '" given.');
 	}
 
 	/**

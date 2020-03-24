@@ -1,5 +1,5 @@
-FIO payment authorizator
-========================
+Fio bank payment authorizator
+=============================
 
 Simple package for search payments in your bank account by API and authorize new orders.
 

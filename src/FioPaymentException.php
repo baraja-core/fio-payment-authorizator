@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Baraja;
+namespace Baraja\FioPaymentAuthorizator;
 
 
 final class FioPaymentException extends \RuntimeException

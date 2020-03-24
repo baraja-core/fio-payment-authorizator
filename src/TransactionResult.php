@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Baraja;
+namespace Baraja\FioPaymentAuthorizator;
 
 
 use Nette\SmartObject;
@@ -13,7 +13,7 @@ final class TransactionResult
 {
 	use SmartObject;
 
-	/** var Transaction[]  */
+	/** @var Transaction[] */
 	private $transactions = [];
 
 	/** @var int */
@@ -75,8 +75,8 @@ final class TransactionResult
 		$this->closingBalance = (float) str_replace(',', '.', $line($parser[6]));
 		$this->dateStart = DateTime::from($line($parser[7]));
 		$this->dateEnd = DateTime::from($line($parser[8]));
-		$this->idFrom = $line($parser[9]);
-		$this->idTo = $line($parser[10]);
+		$this->idFrom = (int) $line($parser[9]);
+		$this->idTo = (int) $line($parser[10]);
 
 		// Transactions
 		for ($i = 13; isset($parser[$i]); $i++) {

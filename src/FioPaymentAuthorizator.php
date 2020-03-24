@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Baraja;
+namespace Baraja\FioPaymentAuthorizator;
 
 
 use Nette\Caching\Cache;
@@ -50,18 +50,18 @@ final class FioPaymentAuthorizator
 	 *    Price: 250 CZK, accept <249, 251>
 	 *
 	 * @param int[]|float[] $unauthorizedVariables -> key is variable, value is expected price.
-	 * @param callable(Transaction $transaction) $callback
+	 * @param callable $callback with first argument of type Transaction.
 	 * @param string $currency
 	 * @param float $tolerance
 	 */
-	public function authOrders(array $unauthorizedVariables, callable $callback, string $currency = 'CZK', float $tolerance = 1): void
+	public function authOrders(array $unauthorizedVariables, callable $callback, string $currency = 'CZK', float $tolerance = 1.0): void
 	{
 		$transactions = $this->process()->getTransactions();
 		$variables = array_keys($unauthorizedVariables);
 
 		$process = static function (float $price, Transaction $transaction) use ($callback, $currency, $tolerance): void {
 			if ($transaction->getCurrency() !== $currency) { // Fix different currencies
-				$price = $this->convertCurrency($transaction->getCurrency(), $currency, $price);
+				$price = Helpers::convertCurrency($transaction->getCurrency(), $currency, $price);
 			}
 			if ($transaction->getPrice() - $price >= -$tolerance) { // Is price in tolerance?
 				$callback($transaction);
@@ -117,19 +117,5 @@ final class FioPaymentAuthorizator
 		}
 
 		return $data;
-	}
-
-
-	/**
-	 * @param string $currentCurrency
-	 * @param string $expectedCurrency
-	 * @param float $price
-	 * @return float
-	 */
-	private function convertCurrency(string $currentCurrency, string $expectedCurrency, float $price): float
-	{
-		// TODO: Reserved for future use.
-
-		return $price;
 	}
 }

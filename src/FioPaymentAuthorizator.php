@@ -11,15 +11,12 @@ use Nette\Caching\IStorage;
 final class FioPaymentAuthorizator
 {
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $privateKey;
 
-	/**
-	 * @var Cache|null
-	 */
+	/** @var Cache|null */
 	private $cache;
+
 
 	/**
 	 * @param string $privateKey
@@ -33,6 +30,7 @@ final class FioPaymentAuthorizator
 		}
 	}
 
+
 	/**
 	 * @return TransactionResult
 	 */
@@ -40,6 +38,7 @@ final class FioPaymentAuthorizator
 	{
 		return new TransactionResult($this->loadData());
 	}
+
 
 	/**
 	 * Check list of unauthorized variable symbols, compare with read bank account list and authorize paid records.
@@ -78,6 +77,7 @@ final class FioPaymentAuthorizator
 			}
 		}
 	}
+
 
 	/**
 	 * @return string
@@ -119,6 +119,7 @@ final class FioPaymentAuthorizator
 		return $data;
 	}
 
+
 	/**
 	 * @param string $currentCurrency
 	 * @param string $expectedCurrency
@@ -131,5 +132,4 @@ final class FioPaymentAuthorizator
 
 		return $price;
 	}
-
 }

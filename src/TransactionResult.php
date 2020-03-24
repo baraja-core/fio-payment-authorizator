@@ -11,70 +11,44 @@ use Nette\Utils\Strings;
 
 final class TransactionResult
 {
-
 	use SmartObject;
 
-	/**
-	 * @var Transaction[]
-	 */
+	/** var Transaction[]  */
 	private $transactions = [];
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	private $accountId;
 
-	/**
-	 * @sample 2010
-	 * @var int
-	 */
+	/** @var int */
 	private $bankId;
 
-	/**
-	 * @sample CZK
-	 * @var string
-	 */
+	/** @var string */
 	private $currency;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $iban;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $bic;
 
-	/**
-	 * @var float
-	 */
+	/** @var float */
 	private $openingBalance;
 
-	/**
-	 * @var float
-	 */
+	/** @var float */
 	private $closingBalance;
 
-	/**
-	 * @var \DateTime
-	 */
+	/** @var \DateTime */
 	private $dateStart;
 
-	/**
-	 * @var \DateTime
-	 */
+	/** @var \DateTime */
 	private $dateEnd;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	private $idFrom;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	private $idTo;
+
 
 	/**
 	 * @param string $data
@@ -94,7 +68,7 @@ final class TransactionResult
 
 		$this->accountId = (int) $line($parser[0]);
 		$this->bankId = (int) $line($parser[1]);
-		$this->currency = $line($parser[2]);
+		$this->currency = strtoupper($line($parser[2]));
 		$this->iban = $line($parser[3]);
 		$this->bic = $line($parser[4]);
 		$this->openingBalance = (float) str_replace(',', '.', $line($parser[5]));
@@ -110,6 +84,7 @@ final class TransactionResult
 		}
 	}
 
+
 	/**
 	 * @return Transaction[]
 	 */
@@ -117,6 +92,7 @@ final class TransactionResult
 	{
 		return $this->transactions;
 	}
+
 
 	/**
 	 * @return int
@@ -126,6 +102,7 @@ final class TransactionResult
 		return $this->accountId;
 	}
 
+
 	/**
 	 * @return int
 	 */
@@ -133,6 +110,7 @@ final class TransactionResult
 	{
 		return $this->bankId;
 	}
+
 
 	/**
 	 * @return string
@@ -142,6 +120,7 @@ final class TransactionResult
 		return $this->currency;
 	}
 
+
 	/**
 	 * @return string
 	 */
@@ -149,6 +128,7 @@ final class TransactionResult
 	{
 		return $this->iban;
 	}
+
 
 	/**
 	 * @return string
@@ -158,6 +138,7 @@ final class TransactionResult
 		return $this->bic;
 	}
 
+
 	/**
 	 * @return float
 	 */
@@ -165,6 +146,7 @@ final class TransactionResult
 	{
 		return $this->openingBalance;
 	}
+
 
 	/**
 	 * @return float
@@ -174,6 +156,7 @@ final class TransactionResult
 		return $this->closingBalance;
 	}
 
+
 	/**
 	 * @return \DateTime
 	 */
@@ -181,6 +164,7 @@ final class TransactionResult
 	{
 		return $this->dateStart;
 	}
+
 
 	/**
 	 * @return \DateTime
@@ -190,6 +174,7 @@ final class TransactionResult
 		return $this->dateEnd;
 	}
 
+
 	/**
 	 * @return int
 	 */
@@ -198,6 +183,7 @@ final class TransactionResult
 		return $this->idFrom;
 	}
 
+
 	/**
 	 * @return int
 	 */
@@ -205,5 +191,4 @@ final class TransactionResult
 	{
 		return $this->idTo;
 	}
-
 }

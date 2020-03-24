@@ -10,104 +10,65 @@ use Nette\Utils\DateTime;
 
 final class Transaction
 {
-
 	use SmartObject;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	private $id;
 
-	/**
-	 * @var \DateTime
-	 */
+	/** @var \DateTime */
 	private $date;
 
-	/**
-	 * @var float
-	 */
+	/** @var float */
 	private $price;
 
-	/**
-	 * @sample CZK
-	 * @var string
-	 */
+	/** @var string */
 	private $currency;
 
-	/**
-	 * @var string|null
-	 */
+	/** @var string|null */
 	private $toAccount;
 
-	/**
-	 * @var string|null
-	 */
+	/** @var string|null */
 	private $toAccountName;
 
-	/**
-	 * @var int|null
-	 */
+	/** @var int|null */
 	private $toBankCode;
 
-	/**
-	 * @var string|null
-	 */
+	/** @var string|null */
 	private $toBankName;
 
-	/**
-	 * @var int|null
-	 */
+	/** @var int|null */
 	private $constantSymbol;
 
-	/**
-	 * @var int|null
-	 */
+	/** @var int|null */
 	private $variableSymbol;
 
-	/**
-	 * @var int|null
-	 */
+	/** @var int|null */
 	private $specificSymbol;
 
-	/**
-	 * @var string|null
-	 */
+	/** @var string|null */
 	private $userNotice;
 
-	/**
-	 * @var string|null
-	 */
+	/** @var string|null */
 	private $toMessage;
 
-	/**
-	 * @var string|null
-	 */
+	/** @var string|null */
 	private $type;
 
-	/**
-	 * @var string|null
-	 */
+	/** @var string|null */
 	private $sender;
 
-	/**
-	 * @var string|null
-	 */
+	/** @var string|null */
 	private $message;
 
-	/**
-	 * @var string|null
-	 */
+	/** @var string|null */
 	private $comment;
 
-	/**
-	 * @var string|null
-	 */
+	/** @var string|null */
 	private $bic;
 
-	/**
-	 * @var int|null
-	 */
+	/** @var int|null */
 	private $idTransaction;
+
 
 	/**
 	 * @param string $line
@@ -116,26 +77,27 @@ final class Transaction
 	{
 		$parser = explode(';', $line);
 
-		$this->id = ((int) ($parser[0] ?? null)) ? : null;
+		$this->id = ((int) ($parser[0] ?? null)) ?: null;
 		$this->date = DateTime::from($parser[1] ?? null);
-		$this->price = ((float) str_replace(',', '.', $parser[2] ?? '0')) ? : null;
-		$this->currency = trim($parser[3] ?? '', '"') ? : null;
-		$this->toAccount = trim($parser[4] ?? '', '"') ? : null;
-		$this->toAccountName = trim($parser[5] ?? '', '"') ? : null;
-		$this->toBankCode = ((int) ($parser[6] ?? null)) ? : null;
-		$this->toBankName = trim($parser[7] ?? '', '"') ? : null;
-		$this->constantSymbol = ((int) ($parser[8] ?? null)) ? : null;
-		$this->variableSymbol = ((int) ($parser[9] ?? null)) ? : null;
-		$this->specificSymbol = ((int) ($parser[10] ?? null)) ? : null;
-		$this->userNotice = trim($parser[11] ?? '', '"') ? : null;
-		$this->toMessage = trim($parser[12] ?? '', '"') ? : null;
-		$this->type = trim($parser[13] ?? '', '"') ? : null;
-		$this->sender = trim($parser[14] ?? '', '"') ? : null;
-		$this->message = trim($parser[15] ?? '', '"') ? : null;
-		$this->comment = trim($parser[16] ?? '', '"') ? : null;
-		$this->bic = trim($parser[17] ?? '', '"') ? : null;
-		$this->idTransaction = ((int) ($parser[18] ?? null)) ? : null;
+		$this->price = ((float) str_replace(',', '.', $parser[2] ?? '0')) ?: null;
+		$this->currency = strtoupper(trim($parser[3] ?? '', '"')) ?: null;
+		$this->toAccount = trim($parser[4] ?? '', '"') ?: null;
+		$this->toAccountName = trim($parser[5] ?? '', '"') ?: null;
+		$this->toBankCode = ((int) ($parser[6] ?? null)) ?: null;
+		$this->toBankName = trim($parser[7] ?? '', '"') ?: null;
+		$this->constantSymbol = ((int) ($parser[8] ?? null)) ?: null;
+		$this->variableSymbol = ((int) ($parser[9] ?? null)) ?: null;
+		$this->specificSymbol = ((int) ($parser[10] ?? null)) ?: null;
+		$this->userNotice = trim($parser[11] ?? '', '"') ?: null;
+		$this->toMessage = trim($parser[12] ?? '', '"') ?: null;
+		$this->type = trim($parser[13] ?? '', '"') ?: null;
+		$this->sender = trim($parser[14] ?? '', '"') ?: null;
+		$this->message = trim($parser[15] ?? '', '"') ?: null;
+		$this->comment = trim($parser[16] ?? '', '"') ?: null;
+		$this->bic = trim($parser[17] ?? '', '"') ?: null;
+		$this->idTransaction = ((int) ($parser[18] ?? null)) ?: null;
 	}
+
 
 	/**
 	 * @param int $variableSymbol
@@ -145,6 +107,7 @@ final class Transaction
 	{
 		return $this->variableSymbol === $variableSymbol || $this->isContainVariableSymbolInMessage($variableSymbol);
 	}
+
 
 	/**
 	 * @param int $variableSymbol
@@ -157,6 +120,7 @@ final class Transaction
 		return strpos($haystack, (string) $variableSymbol) !== false;
 	}
 
+
 	/**
 	 * @return int
 	 */
@@ -164,6 +128,7 @@ final class Transaction
 	{
 		return $this->id;
 	}
+
 
 	/**
 	 * @return \DateTime
@@ -173,6 +138,7 @@ final class Transaction
 		return $this->date;
 	}
 
+
 	/**
 	 * @return float
 	 */
@@ -180,6 +146,7 @@ final class Transaction
 	{
 		return $this->price;
 	}
+
 
 	/**
 	 * @return string
@@ -189,6 +156,7 @@ final class Transaction
 		return $this->currency;
 	}
 
+
 	/**
 	 * @return string|null
 	 */
@@ -196,6 +164,7 @@ final class Transaction
 	{
 		return $this->toAccount;
 	}
+
 
 	/**
 	 * @return string|null
@@ -205,6 +174,7 @@ final class Transaction
 		return $this->toAccountName;
 	}
 
+
 	/**
 	 * @return int|null
 	 */
@@ -212,6 +182,7 @@ final class Transaction
 	{
 		return $this->toBankCode;
 	}
+
 
 	/**
 	 * @return string|null
@@ -221,6 +192,7 @@ final class Transaction
 		return $this->toBankName;
 	}
 
+
 	/**
 	 * @return int|null
 	 */
@@ -228,6 +200,7 @@ final class Transaction
 	{
 		return $this->constantSymbol;
 	}
+
 
 	/**
 	 * @return int|null
@@ -237,6 +210,7 @@ final class Transaction
 		return $this->variableSymbol;
 	}
 
+
 	/**
 	 * @return int|null
 	 */
@@ -244,6 +218,7 @@ final class Transaction
 	{
 		return $this->specificSymbol;
 	}
+
 
 	/**
 	 * @return string|null
@@ -253,6 +228,7 @@ final class Transaction
 		return $this->userNotice;
 	}
 
+
 	/**
 	 * @return string|null
 	 */
@@ -260,6 +236,7 @@ final class Transaction
 	{
 		return $this->toMessage;
 	}
+
 
 	/**
 	 * @return string|null
@@ -269,6 +246,7 @@ final class Transaction
 		return $this->type;
 	}
 
+
 	/**
 	 * @return string|null
 	 */
@@ -276,6 +254,7 @@ final class Transaction
 	{
 		return $this->sender;
 	}
+
 
 	/**
 	 * @return string|null
@@ -285,6 +264,7 @@ final class Transaction
 		return $this->message;
 	}
 
+
 	/**
 	 * @return string|null
 	 */
@@ -292,6 +272,7 @@ final class Transaction
 	{
 		return $this->comment;
 	}
+
 
 	/**
 	 * @return string|null
@@ -301,6 +282,7 @@ final class Transaction
 		return $this->bic;
 	}
 
+
 	/**
 	 * @return int|null
 	 */
@@ -308,5 +290,4 @@ final class Transaction
 	{
 		return $this->idTransaction;
 	}
-
 }

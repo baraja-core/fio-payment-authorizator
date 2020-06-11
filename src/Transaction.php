@@ -8,7 +8,7 @@ namespace Baraja\FioPaymentAuthorizator;
 use Nette\SmartObject;
 use Nette\Utils\DateTime;
 
-final class Transaction
+final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 {
 	use SmartObject;
 

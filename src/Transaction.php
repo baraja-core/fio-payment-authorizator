@@ -5,82 +5,57 @@ declare(strict_types=1);
 namespace Baraja\FioPaymentAuthorizator;
 
 
-use Nette\SmartObject;
 use Nette\Utils\DateTime;
 
 final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 {
-	use SmartObject;
+	private int $id;
 
-	/** @var int */
-	private $id;
+	private \DateTime $date;
 
-	/** @var \DateTime */
-	private $date;
+	private float $price;
 
-	/** @var float */
-	private $price;
+	private string $currency;
 
-	/** @var string */
-	private $currency;
+	private ?string $toAccount;
 
-	/** @var string|null */
-	private $toAccount;
+	private ?string $toAccountName;
 
-	/** @var string|null */
-	private $toAccountName;
+	private ?int $toBankCode;
 
-	/** @var int|null */
-	private $toBankCode;
+	private ?string $toBankName;
 
-	/** @var string|null */
-	private $toBankName;
+	private ?int $constantSymbol;
 
-	/** @var int|null */
-	private $constantSymbol;
+	private ?int $variableSymbol;
 
-	/** @var int|null */
-	private $variableSymbol;
+	private ?int $specificSymbol;
 
-	/** @var int|null */
-	private $specificSymbol;
+	private ?string $userNotice;
 
-	/** @var string|null */
-	private $userNotice;
+	private ?string $toMessage;
 
-	/** @var string|null */
-	private $toMessage;
+	private ?string $type;
 
-	/** @var string|null */
-	private $type;
+	private ?string $sender;
 
-	/** @var string|null */
-	private $sender;
+	private ?string $message;
 
-	/** @var string|null */
-	private $message;
+	private ?string $comment;
 
-	/** @var string|null */
-	private $comment;
+	private ?string $bic;
 
-	/** @var string|null */
-	private $bic;
-
-	/** @var int|null */
-	private $idTransaction;
+	private ?int $idTransaction;
 
 
-	/**
-	 * @param string $line
-	 */
-	public function __construct(string $line)
+	public function __construct(string $line, $defaultCurrency = 'CZK')
 	{
 		$parser = explode(';', $line);
 
-		$this->id = ((int) ($parser[0] ?? null)) ?: null;
+		$this->id = ((int) ($parser[0] ?? null)) ?: '---id-not-defined---';
 		$this->date = DateTime::from($parser[1] ?? null);
-		$this->price = ((float) str_replace(',', '.', $parser[2] ?? '0')) ?: null;
-		$this->currency = strtoupper(trim($parser[3] ?? '', '"')) ?: null;
+		$this->price = ((float) str_replace(',', '.', $parser[2] ?? '0')) ?: 0;
+		$this->currency = strtoupper(trim($parser[3] ?? '', '"')) ?: $defaultCurrency;
 		$this->toAccount = trim($parser[4] ?? '', '"') ?: null;
 		$this->toAccountName = trim($parser[5] ?? '', '"') ?: null;
 		$this->toBankCode = ((int) ($parser[6] ?? null)) ?: null;
@@ -99,20 +74,12 @@ final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 	}
 
 
-	/**
-	 * @param int $variableSymbol
-	 * @return bool
-	 */
 	public function isVariableSymbol(int $variableSymbol): bool
 	{
 		return $this->variableSymbol === $variableSymbol || $this->isContainVariableSymbolInMessage($variableSymbol);
 	}
 
 
-	/**
-	 * @param int $variableSymbol
-	 * @return bool
-	 */
 	public function isContainVariableSymbolInMessage(int $variableSymbol): bool
 	{
 		$haystack = $this->userNotice . ' ' . $this->toMessage . ' ' . $this->message . ' ' . $this->comment;
@@ -121,171 +88,114 @@ final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 	}
 
 
-	/**
-	 * @return int
-	 */
 	public function getId(): int
 	{
 		return $this->id;
 	}
 
 
-	/**
-	 * @return \DateTime
-	 */
 	public function getDate(): \DateTime
 	{
 		return $this->date;
 	}
 
 
-	/**
-	 * @return float
-	 */
 	public function getPrice(): float
 	{
 		return $this->price;
 	}
 
 
-	/**
-	 * @return string
-	 */
 	public function getCurrency(): string
 	{
 		return $this->currency;
 	}
 
 
-	/**
-	 * @return string|null
-	 */
 	public function getToAccount(): ?string
 	{
 		return $this->toAccount;
 	}
 
 
-	/**
-	 * @return string|null
-	 */
 	public function getToAccountName(): ?string
 	{
 		return $this->toAccountName;
 	}
 
 
-	/**
-	 * @return int|null
-	 */
 	public function getToBankCode(): ?int
 	{
 		return $this->toBankCode;
 	}
 
 
-	/**
-	 * @return string|null
-	 */
 	public function getToBankName(): ?string
 	{
 		return $this->toBankName;
 	}
 
 
-	/**
-	 * @return int|null
-	 */
 	public function getConstantSymbol(): ?int
 	{
 		return $this->constantSymbol;
 	}
 
 
-	/**
-	 * @return int|null
-	 */
 	public function getVariableSymbol(): ?int
 	{
 		return $this->variableSymbol;
 	}
 
 
-	/**
-	 * @return int|null
-	 */
 	public function getSpecificSymbol(): ?int
 	{
 		return $this->specificSymbol;
 	}
 
 
-	/**
-	 * @return string|null
-	 */
 	public function getUserNotice(): ?string
 	{
 		return $this->userNotice;
 	}
 
 
-	/**
-	 * @return string|null
-	 */
 	public function getToMessage(): ?string
 	{
 		return $this->toMessage;
 	}
 
 
-	/**
-	 * @return string|null
-	 */
 	public function getType(): ?string
 	{
 		return $this->type;
 	}
 
 
-	/**
-	 * @return string|null
-	 */
 	public function getSender(): ?string
 	{
 		return $this->sender;
 	}
 
 
-	/**
-	 * @return string|null
-	 */
 	public function getMessage(): ?string
 	{
 		return $this->message;
 	}
 
 
-	/**
-	 * @return string|null
-	 */
 	public function getComment(): ?string
 	{
 		return $this->comment;
 	}
 
 
-	/**
-	 * @return string|null
-	 */
 	public function getBic(): ?string
 	{
 		return $this->bic;
 	}
 
 
-	/**
-	 * @return int|null
-	 */
 	public function getIdTransaction(): ?int
 	{
 		return $this->idTransaction;

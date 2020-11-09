@@ -5,54 +5,38 @@ declare(strict_types=1);
 namespace Baraja\FioPaymentAuthorizator;
 
 
-use Nette\SmartObject;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
 
 final class TransactionResult
 {
-	use SmartObject;
 
 	/** @var Transaction[] */
-	private $transactions = [];
+	private array $transactions = [];
 
-	/** @var int */
-	private $accountId;
+	private int $accountId;
 
-	/** @var int */
-	private $bankId;
+	private int $bankId;
 
-	/** @var string */
-	private $currency;
+	private string $currency;
 
-	/** @var string */
-	private $iban;
+	private string $iban;
 
-	/** @var string */
-	private $bic;
+	private string $bic;
 
-	/** @var float */
-	private $openingBalance;
+	private float $openingBalance;
 
-	/** @var float */
-	private $closingBalance;
+	private float $closingBalance;
 
-	/** @var \DateTime */
-	private $dateStart;
+	private \DateTime $dateStart;
 
-	/** @var \DateTime */
-	private $dateEnd;
+	private \DateTime $dateEnd;
 
-	/** @var int */
-	private $idFrom;
+	private int $idFrom;
 
-	/** @var int */
-	private $idTo;
+	private int $idTo;
 
 
-	/**
-	 * @param string $data
-	 */
 	public function __construct(string $data)
 	{
 		$parser = explode("\n", Strings::normalize($data));
@@ -78,8 +62,7 @@ final class TransactionResult
 		$this->idFrom = (int) $line($parser[9]);
 		$this->idTo = (int) $line($parser[10]);
 
-		// Transactions
-		for ($i = 13; isset($parser[$i]); $i++) {
+		for ($i = 13; isset($parser[$i]); $i++) { // Transactions
 			$this->transactions[] = new Transaction($parser[$i]);
 		}
 	}
@@ -94,99 +77,66 @@ final class TransactionResult
 	}
 
 
-	/**
-	 * @return int
-	 */
 	public function getAccountId(): int
 	{
 		return $this->accountId;
 	}
 
 
-	/**
-	 * @return int
-	 */
 	public function getBankId(): int
 	{
 		return $this->bankId;
 	}
 
 
-	/**
-	 * @return string
-	 */
 	public function getCurrency(): string
 	{
 		return $this->currency;
 	}
 
 
-	/**
-	 * @return string
-	 */
 	public function getIban(): string
 	{
 		return $this->iban;
 	}
 
 
-	/**
-	 * @return string
-	 */
 	public function getBic(): string
 	{
 		return $this->bic;
 	}
 
 
-	/**
-	 * @return float
-	 */
 	public function getOpeningBalance(): float
 	{
 		return $this->openingBalance;
 	}
 
 
-	/**
-	 * @return float
-	 */
 	public function getClosingBalance(): float
 	{
 		return $this->closingBalance;
 	}
 
 
-	/**
-	 * @return \DateTime
-	 */
 	public function getDateStart(): \DateTime
 	{
 		return $this->dateStart;
 	}
 
 
-	/**
-	 * @return \DateTime
-	 */
 	public function getDateEnd(): \DateTime
 	{
 		return $this->dateEnd;
 	}
 
 
-	/**
-	 * @return int
-	 */
 	public function getIdFrom(): int
 	{
 		return $this->idFrom;
 	}
 
 
-	/**
-	 * @return int
-	 */
 	public function getIdTo(): int
 	{
 		return $this->idTo;

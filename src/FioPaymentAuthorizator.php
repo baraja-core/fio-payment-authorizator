@@ -11,18 +11,11 @@ use Nette\Caching\IStorage;
 
 final class FioPaymentAuthorizator extends BaseAuthorizator
 {
+	private string $privateKey;
 
-	/** @var string */
-	private $privateKey;
-
-	/** @var Cache|null */
-	private $cache;
+	private ?Cache $cache;
 
 
-	/**
-	 * @param string $privateKey
-	 * @param IStorage|null $storage
-	 */
 	public function __construct(string $privateKey, ?IStorage $storage = null)
 	{
 		$this->privateKey = $privateKey;
@@ -32,9 +25,6 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 	}
 
 
-	/**
-	 * @return TransactionResult
-	 */
 	public function process(): TransactionResult
 	{
 		return new TransactionResult($this->loadData());
@@ -50,9 +40,6 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 	}
 
 
-	/**
-	 * @return string
-	 */
 	private function loadData(): string
 	{
 		static $staticCache = [];
@@ -70,11 +57,9 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 		if (isset($staticCache[$url]) === true) {
 			return $staticCache[$url];
 		}
-
 		if ($this->cache !== null && ($cache = $this->cache->load($url)) !== null) {
 			return $staticCache[$url] = $cache;
 		}
-
 		if (($data = file_get_contents($url)) === false) {
 			FioPaymentException::emptyResponse($url);
 		}

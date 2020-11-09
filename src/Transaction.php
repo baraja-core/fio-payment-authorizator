@@ -48,7 +48,7 @@ final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 	private ?int $idTransaction;
 
 
-	public function __construct(string $line, $defaultCurrency = 'CZK')
+	public function __construct(string $line, string $defaultCurrency = 'CZK')
 	{
 		$parser = explode(';', $line);
 

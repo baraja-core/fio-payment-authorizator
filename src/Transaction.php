@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Baraja\FioPaymentAuthorizator;
 
 
-use Nette\Utils\DateTime;
+use DateTime;
+use DateTimeInterface;
 
 final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 {
 	private int $id;
 
-	private \DateTime $date;
+	private DateTimeInterface $date;
 
 	private float $price;
 
@@ -52,8 +53,13 @@ final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 	{
 		$parser = explode(';', $line);
 
-		$this->id = ((int) ($parser[0] ?? null)) ?: '---id-not-defined---';
-		$this->date = DateTime::from($parser[1] ?? null);
+		if (isset($parser[0]) && $parser[0]) {
+			$this->id = (int) $parser[0];
+		} else {
+			throw new \InvalidArgumentException('Transaction identifier is not defined.' . "\n\n" . 'Line: ' . $line);
+		}
+
+		$this->date = new DateTime((string) ($parser[1] ?? 'now'));
 		$this->price = ((float) str_replace(',', '.', $parser[2] ?? '0')) ?: 0;
 		$this->currency = strtoupper(trim($parser[3] ?? '', '"')) ?: $defaultCurrency;
 		$this->toAccount = trim($parser[4] ?? '', '"') ?: null;
@@ -94,7 +100,7 @@ final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 	}
 
 
-	public function getDate(): \DateTime
+	public function getDate(): DateTimeInterface
 	{
 		return $this->date;
 	}

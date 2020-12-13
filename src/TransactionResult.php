@@ -42,7 +42,7 @@ final class TransactionResult
 		$parser = explode("\n", Strings::normalize($data));
 
 		if (isset($parser[10]) === false) {
-			FioPaymentException::transactionDataAreBroken($data);
+			throw new \InvalidArgumentException('Fio transaction data file is broken. File must define some variables.' . "\n\n" . $data);
 		}
 
 		// Meta information parser

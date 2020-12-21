@@ -13,7 +13,7 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 {
 	private string $privateKey;
 
-	private ?Cache $cache;
+	private ?Cache $cache = null;
 
 
 	public function __construct(string $privateKey, ?IStorage $storage = null)

@@ -10,10 +10,10 @@
 	],
 	"require": {
 		"php": ">=7.4.0",
-		"baraja-core/bank-transaction-authorizator": "^1.0",
-		"nette/caching": "^3.1"
+		"baraja-core/bank-transaction-authorizator": "^1.0"
 	},
 	"require-dev": {
+		"nette/caching": "^3.1",
 		"phpstan/phpstan": "^0.12.18",
 		"tracy/tracy": "^2.7",
 		"phpstan/phpstan-nette": "^0.12.6",

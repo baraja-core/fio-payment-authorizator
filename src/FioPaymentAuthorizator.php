@@ -7,7 +7,7 @@ namespace Baraja\FioPaymentAuthorizator;
 
 use Baraja\BankTransferAuthorizator\BaseAuthorizator;
 use Nette\Caching\Cache;
-use Nette\Caching\IStorage;
+use Nette\Caching\Storage;
 
 final class FioPaymentAuthorizator extends BaseAuthorizator
 {
@@ -16,7 +16,7 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 	private ?Cache $cache = null;
 
 
-	public function __construct(string $privateKey, ?IStorage $storage = null)
+	public function __construct(string $privateKey, ?Storage $storage = null)
 	{
 		$this->privateKey = $privateKey;
 		if ($storage !== null) {

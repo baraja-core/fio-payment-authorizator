@@ -60,8 +60,8 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 		if ($this->cache !== null && ($cache = $this->cache->load($url)) !== null) {
 			return $staticCache[$url] = $cache;
 		}
-		if (($data = trim((string) file_get_contents($url))) === '') {
-			throw new FioPaymentException('Fio payment API response is empty, URL "' . $url . '" given.');
+		if (($data = trim((string) @file_get_contents($url))) === '') {
+			throw new FioPaymentException('Fio payment API response is empty, URL "' . $url . '" given. Is your API key valid?');
 		}
 
 		$staticCache[$url] = $data;

@@ -40,6 +40,12 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 	}
 
 
+	public function getDefaultCurrency(): string
+	{
+		return $this->process()->getCurrency();
+	}
+
+
 	private function loadData(): string
 	{
 		static $staticCache = [];

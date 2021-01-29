@@ -60,15 +60,15 @@ final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 		}
 
 		$this->date = new DateTime((string) ($parser[1] ?? 'now'));
-		$this->price = ((float) str_replace(',', '.', $parser[2] ?? '0')) ?: 0;
+		$this->price = (float) str_replace(',', '.', $parser[2] ?? '0') ?: 0;
 		$this->currency = strtoupper(trim($parser[3] ?? '', '"')) ?: $defaultCurrency;
 		$this->toAccount = trim($parser[4] ?? '', '"') ?: null;
 		$this->toAccountName = trim($parser[5] ?? '', '"') ?: null;
-		$this->toBankCode = ((int) ($parser[6] ?? null)) ?: null;
+		$this->toBankCode = (int) ($parser[6] ?? null) ?: null;
 		$this->toBankName = trim($parser[7] ?? '', '"') ?: null;
-		$this->constantSymbol = ((int) ($parser[8] ?? null)) ?: null;
-		$this->variableSymbol = ((int) ($parser[9] ?? null)) ?: null;
-		$this->specificSymbol = ((int) ($parser[10] ?? null)) ?: null;
+		$this->constantSymbol = (int) ($parser[8] ?? null) ?: null;
+		$this->variableSymbol = (int) ($parser[9] ?? null) ?: null;
+		$this->specificSymbol = (int) ($parser[10] ?? null) ?: null;
 		$this->userNotice = trim($parser[11] ?? '', '"') ?: null;
 		$this->toMessage = trim($parser[12] ?? '', '"') ?: null;
 		$this->type = trim($parser[13] ?? '', '"') ?: null;
@@ -76,7 +76,7 @@ final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 		$this->message = trim($parser[15] ?? '', '"') ?: null;
 		$this->comment = trim($parser[16] ?? '', '"') ?: null;
 		$this->bic = trim($parser[17] ?? '', '"') ?: null;
-		$this->idTransaction = ((int) ($parser[18] ?? null)) ?: null;
+		$this->idTransaction = (int) ($parser[18] ?? null) ?: null;
 	}
 
 

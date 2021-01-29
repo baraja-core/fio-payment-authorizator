@@ -46,9 +46,7 @@ final class TransactionResult
 		}
 
 		// Meta information parser
-		$line = static function (string $line): string {
-			return explode(';', $line, 2)[1] ?? '';
-		};
+		$line = static fn (string $line): string => explode(';', $line, 2)[1] ?? '';
 
 		$this->accountId = (int) $line($parser[0]);
 		$this->bankId = (int) $line($parser[1]);

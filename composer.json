@@ -10,7 +10,7 @@
 	],
 	"require": {
 		"php": "^8.0",
-		"baraja-core/bank-transaction-authorizator": "^1.0"
+		"baraja-core/bank-transaction-authorizator": "^2.0"
 	},
 	"require-dev": {
 		"nette/caching": "^3.1",

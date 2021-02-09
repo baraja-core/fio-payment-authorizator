@@ -80,17 +80,17 @@ final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 	}
 
 
-	public function isVariableSymbol(int $variableSymbol): bool
+	public function isVariableSymbol(int $vs): bool
 	{
-		return $this->variableSymbol === $variableSymbol || $this->isContainVariableSymbolInMessage($variableSymbol);
+		return $this->variableSymbol === $vs || $this->isContainVariableSymbolInMessage($vs);
 	}
 
 
-	public function isContainVariableSymbolInMessage(int $variableSymbol): bool
+	public function isContainVariableSymbolInMessage(int|string $vs): bool
 	{
 		$haystack = $this->userNotice . ' ' . $this->toMessage . ' ' . $this->message . ' ' . $this->comment;
 
-		return strpos($haystack, (string) $variableSymbol) !== false;
+		return str_contains($haystack, (string) $vs);
 	}
 
 

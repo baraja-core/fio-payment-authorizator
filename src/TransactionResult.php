@@ -28,9 +28,9 @@ final class TransactionResult
 
 	private float $closingBalance;
 
-	private \DateTime $dateStart;
+	private \DateTimeInterface $dateStart;
 
-	private \DateTime $dateEnd;
+	private \DateTimeInterface $dateEnd;
 
 	private int $idFrom;
 
@@ -117,13 +117,13 @@ final class TransactionResult
 	}
 
 
-	public function getDateStart(): \DateTime
+	public function getDateStart(): \DateTimeInterface
 	{
 		return $this->dateStart;
 	}
 
 
-	public function getDateEnd(): \DateTime
+	public function getDateEnd(): \DateTimeInterface
 	{
 		return $this->dateEnd;
 	}

@@ -66,8 +66,16 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 		if ($this->cache !== null && ($cache = $this->cache->load($url)) !== null) {
 			return $staticCache[$url] = $cache;
 		}
-		if (($data = trim((string) @file_get_contents($url))) === '') {
+		$data = $this->normalize((string) @file_get_contents($url));
+		if ($data === '') {
 			throw new FioPaymentException('Fio payment API response is empty, URL "' . $url . '" given. Is your API key valid?');
+		}
+		if (str_contains($data, '<status>error</status>')) {
+			throw new \RuntimeException(
+				'The external API service is currently down.'
+				. "\n\n" . 'Original report:'
+				. "\n\n" . $data,
+			);
 		}
 
 		$staticCache[$url] = $data;
@@ -79,5 +87,30 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 		}
 
 		return $data;
+	}
+
+
+	/**
+	 * Removes control characters, normalizes line breaks to `\n`, removes leading and trailing blank lines,
+	 * trims end spaces on lines, normalizes UTF-8 to the normal form of NFC.
+	 */
+	private function normalize(string $s): string
+	{
+		$s = trim($s);
+		// convert to compressed normal form (NFC)
+		if (class_exists('Normalizer', false) && ($n = \Normalizer::normalize($s, \Normalizer::FORM_C)) !== false) {
+			$s = (string) $n;
+		}
+
+		$s = str_replace(["\r\n", "\r"], "\n", $s);
+
+		// remove control characters; leave \t + \n
+		$s = (string) preg_replace('#[\x00-\x08\x0B-\x1F\x7F-\x9F]+#u', '', $s);
+
+		// right trim
+		$s = (string) preg_replace('#[\t ]+$#m', '', $s);
+
+		// leading and trailing blank lines
+		return trim($s, "\n");
 	}
 }

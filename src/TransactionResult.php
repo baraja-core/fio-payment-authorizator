@@ -6,7 +6,6 @@ namespace Baraja\FioPaymentAuthorizator;
 
 
 use Nette\Utils\DateTime;
-use Nette\Utils\Strings;
 
 final class TransactionResult
 {
@@ -39,10 +38,13 @@ final class TransactionResult
 
 	public function __construct(string $data)
 	{
-		$parser = explode("\n", Strings::normalize($data));
+		$parser = explode("\n", $data);
 
 		if (isset($parser[10]) === false) {
-			throw new \InvalidArgumentException('Fio transaction data file is broken. File must define some variables.' . "\n\n" . $data);
+			throw new \InvalidArgumentException(
+				'Fio transaction data file is broken. File must define some variables.'
+				. "\n\n" . $data,
+			);
 		}
 
 		// Meta information parser

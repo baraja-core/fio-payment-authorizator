@@ -12,14 +12,16 @@ use Nette\Utils\Callback;
 
 final class FioPaymentAuthorizator extends BaseAuthorizator
 {
-	private string $privateKey;
-
 	private ?Cache $cache = null;
 
 
-	public function __construct(string $privateKey, ?Storage $storage = null)
-	{
-		$this->privateKey = $privateKey;
+	public function __construct(
+		private string $privateKey,
+		?Storage $storage = null
+	) {
+		if ($privateKey === '') {
+			throw new FioPaymentException('Private key can not be empty.');
+		}
 		if ($storage !== null) {
 			$this->cache = new Cache($storage, 'fio-payment-authorizator');
 		}
@@ -64,21 +66,14 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 		if (isset($staticCache[$url]) === true) {
 			return $staticCache[$url];
 		}
-		if ($this->cache !== null && ($cache = $this->cache->load($url)) !== null) {
-			return $staticCache[$url] = $cache;
-		}
-		$data = $this->normalize($this->safeDownload($url));
-		if ($data === '') {
-			throw new FioPaymentException('Fio payment API response is empty, URL "' . $url . '" given. Is your API key valid?');
-		}
-		if (str_contains($data, '<status>error</status>')) {
-			throw new \RuntimeException(
-				'The external API service is currently down.'
-				. "\n\n" . 'Original report:'
-				. "\n\n" . $data,
-			);
+		if ($this->cache !== null) {
+			$cache = $this->cache->load($url);
+			if ($cache !== null) {
+				return $staticCache[$url] = $cache;
+			}
 		}
 
+		$data = $this->safeDownload($url);
 		$staticCache[$url] = $data;
 		if ($this->cache !== null) {
 			$this->cache->save($url, $data, [
@@ -99,8 +94,11 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 	{
 		$s = trim($s);
 		// convert to compressed normal form (NFC)
-		if (class_exists('Normalizer', false) && ($n = \Normalizer::normalize($s, \Normalizer::FORM_C)) !== false) {
-			$s = (string) $n;
+		if (class_exists('Normalizer', false)) {
+			$n = \Normalizer::normalize($s, \Normalizer::FORM_C);
+			if ($n !== false) {
+				$s = (string) $n;
+			}
 		}
 
 		$s = str_replace(["\r\n", "\r"], "\n", $s);
@@ -118,13 +116,28 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 
 	private function safeDownload(string $url): string
 	{
-		return (string) Callback::invokeSafe(
+		$data = (string) Callback::invokeSafe(
 			'file_get_contents',
 			[$url],
-			fn(string $message) => throw new \RuntimeException(
+			fn(string $message) => throw new FioPaymentException(
 				'Can not download data from URL "' . $url . '".'
-				. "\n" . 'Reported error: ' . $message
-			)
+				. "\n" . 'Reported error: ' . $message,
+			),
 		);
+		$data = $this->normalize($data);
+		if ($data === '') {
+			throw new FioPaymentException(
+				'Fio payment API response is empty, URL "' . $url . '" given. Is your API key valid?',
+			);
+		}
+		if (str_contains($data, '<status>error</status>')) {
+			throw new FioPaymentException(
+				'The external API service is currently down.'
+				. "\n\n" . 'Original report:'
+				. "\n\n" . $data,
+			);
+		}
+
+		return $data;
 	}
 }

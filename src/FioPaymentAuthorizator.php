@@ -8,6 +8,7 @@ namespace Baraja\FioPaymentAuthorizator;
 use Baraja\BankTransferAuthorizator\BaseAuthorizator;
 use Nette\Caching\Cache;
 use Nette\Caching\Storage;
+use Nette\Utils\Callback;
 
 final class FioPaymentAuthorizator extends BaseAuthorizator
 {
@@ -66,7 +67,7 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 		if ($this->cache !== null && ($cache = $this->cache->load($url)) !== null) {
 			return $staticCache[$url] = $cache;
 		}
-		$data = $this->normalize((string) @file_get_contents($url));
+		$data = $this->normalize($this->safeDownload($url));
 		if ($data === '') {
 			throw new FioPaymentException('Fio payment API response is empty, URL "' . $url . '" given. Is your API key valid?');
 		}
@@ -112,5 +113,18 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 
 		// leading and trailing blank lines
 		return trim($s, "\n");
+	}
+
+
+	private function safeDownload(string $url): string
+	{
+		return (string) Callback::invokeSafe(
+			'file_get_contents',
+			[$url],
+			fn(string $message) => throw new \RuntimeException(
+				'Can not download data from URL "' . $url . '".'
+				. "\n" . 'Reported error: ' . $message
+			)
+		);
 	}
 }

@@ -5,14 +5,20 @@ Fio bank payment authorizator
 
 Simple package for search payments in your bank account by API and authorize new orders.
 
-Install
--------
+📦 Installation
+---------------
 
-By Composer:
+It's best to use [Composer](https://getcomposer.org) for installation, and you can also find the package on
+[Packagist](https://packagist.org/packages/baraja-core/fio-payment-authorizator) and
+[GitHub](https://github.com/baraja-core/fio-payment-authorizator).
 
-```shell
-composer require baraja-core/fio-payment-authorizator
+To install, simply use the command:
+
 ```
+$ composer require baraja-core/fio-payment-authorizator
+```
+
+You can use the package manually by creating an instance of the internal classes, or register a DIC extension to link the services directly to the Nette Framework.
 
 And create service by Neon:
 
@@ -51,3 +57,8 @@ $fio->authOrders(
     }
 );
 ```
+
+📄 License
+-----------
+
+`baraja-core/fio-payment-authorizator` is licensed under the MIT license. See the [LICENSE](https://github.com/baraja-core/template/blob/master/LICENSE) file for more details.

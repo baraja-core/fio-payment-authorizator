@@ -17,7 +17,7 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 
 	public function __construct(
 		private string $privateKey,
-		?Storage $storage = null
+		?Storage $storage = null,
 	) {
 		if ($privateKey === '') {
 			throw new FioPaymentException('Private key can not be empty.');

@@ -9,7 +9,6 @@ use Nette\Utils\DateTime;
 
 final class TransactionResult
 {
-
 	/** @var Transaction[] */
 	private array $transactions = [];
 

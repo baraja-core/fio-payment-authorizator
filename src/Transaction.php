@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace Baraja\FioPaymentAuthorizator;
 
 
-use DateTime;
-use DateTimeInterface;
-
 final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 {
 	private int $id;
 
-	private DateTimeInterface $date;
+	private \DateTimeInterface $date;
 
 	private float $price;
 
@@ -51,32 +48,32 @@ final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 
 	public function __construct(string $line, string $defaultCurrency = 'CZK')
 	{
-		$parser = explode(';', $line);
+		$part = explode(';', $line);
 
-		if (isset($parser[0]) && $parser[0]) {
-			$this->id = (int) $parser[0];
+		if (isset($part[0]) && $part[0] !== '') {
+			$this->id = (int) $part[0];
 		} else {
-			throw new \InvalidArgumentException('Transaction identifier is not defined.' . "\n\n" . 'Line: ' . $line);
+			throw new \InvalidArgumentException(sprintf("Transaction identifier is not defined.\n\nLine: %s", $line));
 		}
 
-		$this->date = new DateTime((string) ($parser[1] ?? 'now'));
-		$this->price = (float) str_replace(',', '.', $parser[2] ?? '0') ?: 0;
-		$this->currency = strtoupper(trim($parser[3] ?? '', '"')) ?: $defaultCurrency;
-		$this->toAccount = trim($parser[4] ?? '', '"') ?: null;
-		$this->toAccountName = trim($parser[5] ?? '', '"') ?: null;
-		$this->toBankCode = (int) ($parser[6] ?? null) ?: null;
-		$this->toBankName = trim($parser[7] ?? '', '"') ?: null;
-		$this->constantSymbol = (int) ($parser[8] ?? null) ?: null;
-		$this->variableSymbol = (int) ($parser[9] ?? null) ?: null;
-		$this->specificSymbol = (int) ($parser[10] ?? null) ?: null;
-		$this->userNotice = trim($parser[11] ?? '', '"') ?: null;
-		$this->toMessage = trim($parser[12] ?? '', '"') ?: null;
-		$this->type = trim($parser[13] ?? '', '"') ?: null;
-		$this->sender = trim($parser[14] ?? '', '"') ?: null;
-		$this->message = trim($parser[15] ?? '', '"') ?: null;
-		$this->comment = trim($parser[16] ?? '', '"') ?: null;
-		$this->bic = trim($parser[17] ?? '', '"') ?: null;
-		$this->idTransaction = (int) ($parser[18] ?? null) ?: null;
+		$this->date = new \DateTimeImmutable($part[1] ?? 'now');
+		$this->price = ((float) str_replace(',', '.', $part[2] ?? '0')) ?: 0;
+		$this->currency = strtoupper(trim($part[3] ?? '', '"')) ?: $defaultCurrency;
+		$this->toAccount = trim($part[4] ?? '', '"') ?: null;
+		$this->toAccountName = trim($part[5] ?? '', '"') ?: null;
+		$this->toBankCode = ((int) ($part[6] ?? null)) ?: null;
+		$this->toBankName = trim($part[7] ?? '', '"') ?: null;
+		$this->constantSymbol = ((int) ($part[8] ?? null)) ?: null;
+		$this->variableSymbol = ((int) ($part[9] ?? null)) ?: null;
+		$this->specificSymbol = ((int) ($part[10] ?? null)) ?: null;
+		$this->userNotice = trim($part[11] ?? '', '"') ?: null;
+		$this->toMessage = trim($part[12] ?? '', '"') ?: null;
+		$this->type = trim($part[13] ?? '', '"') ?: null;
+		$this->sender = trim($part[14] ?? '', '"') ?: null;
+		$this->message = trim($part[15] ?? '', '"') ?: null;
+		$this->comment = trim($part[16] ?? '', '"') ?: null;
+		$this->bic = trim($part[17] ?? '', '"') ?: null;
+		$this->idTransaction = ((int) ($part[18] ?? null)) ?: null;
 	}
 
 
@@ -88,9 +85,13 @@ final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 
 	public function isContainVariableSymbolInMessage(int|string $vs): bool
 	{
-		$haystack = $this->userNotice . ' ' . $this->toMessage . ' ' . $this->message . ' ' . $this->comment;
-
-		return str_contains($haystack, (string) $vs);
+		return str_contains(sprintf(
+			'%s %s %s %s',
+			$this->userNotice,
+			$this->toMessage,
+			$this->message,
+			$this->comment,
+		), (string) $vs);
 	}
 
 
@@ -100,7 +101,7 @@ final class Transaction implements \Baraja\BankTransferAuthorizator\Transaction
 	}
 
 
-	public function getDate(): DateTimeInterface
+	public function getDate(): \DateTimeInterface
 	{
 		return $this->date;
 	}

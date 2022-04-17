@@ -9,7 +9,7 @@
 		}
 	],
 	"require": {
-		"php": "^8.0",
+		"php": "^8.1",
 		"baraja-core/bank-transaction-authorizator": "^2.0"
 	},
 	"require-dev": {

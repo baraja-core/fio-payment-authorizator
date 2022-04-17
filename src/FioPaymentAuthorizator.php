@@ -30,12 +30,12 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 
 	public function process(): TransactionResult
 	{
-		return new TransactionResult($this->loadData());
+		return new TransactionResult($this->loadApiResult());
 	}
 
 
 	/**
-	 * @return Transaction[]
+	 * @return array<int, Transaction>
 	 */
 	public function getTransactions(): array
 	{
@@ -49,7 +49,7 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 	}
 
 
-	private function loadData(): string
+	private function loadApiResult(): string
 	{
 		static $staticCache = [];
 
@@ -59,9 +59,12 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 			$month = 12;
 		}
 
-		$url = 'https://www.fio.cz/ib_api/rest/periods/' . $this->privateKey
-			. '/' . $year . '-' . $month . '-01/' . date('Y-m-d')
-			. '/transactions.csv';
+		$url = sprintf(
+			'https://www.fio.cz/ib_api/rest/periods/%s/%s/%s/transactions.csv',
+			$this->privateKey,
+			sprintf('%d-%d-01', $year, $month),
+			date('Y-m-d'),
+		);
 
 		if (isset($staticCache[$url]) === true) {
 			return $staticCache[$url];
@@ -75,12 +78,10 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 
 		$data = $this->safeDownload($url);
 		$staticCache[$url] = $data;
-		if ($this->cache !== null) {
-			$this->cache->save($url, $data, [
-				Cache::EXPIRE => '15 minutes',
-				Cache::TAGS => ['fio', 'bank', 'payment'],
-			]);
-		}
+		$this->cache?->save($url, $data, [
+			Cache::EXPIRE => '15 minutes',
+			Cache::TAGS => ['fio', 'bank', 'payment'],
+		]);
 
 		return $data;
 	}
@@ -97,7 +98,7 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 		if (class_exists('Normalizer', false)) {
 			$n = \Normalizer::normalize($s, \Normalizer::FORM_C);
 			if ($n !== false) {
-				$s = (string) $n;
+				$s = $n;
 			}
 		}
 
@@ -119,16 +120,11 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 		$data = (string) Callback::invokeSafe(
 			'file_get_contents',
 			[$url],
-			fn(string $message) => throw new FioPaymentException(
-				'Can not download data from URL "' . $url . '".'
-				. "\n" . 'Reported error: ' . $message,
-			),
+			static fn(string $message) => throw new FioPaymentException(sprintf('Can not download data from URL "%s". Reported error: %s', $url, $message)),
 		);
 		$data = $this->normalize($data);
 		if ($data === '') {
-			throw new FioPaymentException(
-				'Fio payment API response is empty, URL "' . $url . '" given. Is your API key valid?',
-			);
+			throw new FioPaymentException(sprintf('Fio payment API response is empty, URL "%s" given. Is your API key valid?', $url));
 		}
 		if (str_contains($data, '<status>error</status>')) {
 			throw new FioPaymentException(

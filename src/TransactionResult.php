@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Baraja\FioPaymentAuthorizator;
 
 
-use Nette\Utils\DateTime;
-
 final class TransactionResult
 {
-	/** @var Transaction[] */
+	/** @var array<int, Transaction> */
 	private array $transactions = [];
 
 	private int $accountId;
@@ -35,40 +33,37 @@ final class TransactionResult
 	private int $idTo;
 
 
-	public function __construct(string $data)
+	public function __construct(string $payload)
 	{
-		$parser = explode("\n", $data);
+		$lines = explode("\n", $payload);
 
-		if (isset($parser[10]) === false) {
-			throw new \InvalidArgumentException(
-				'Fio transaction data file is broken. File must define some variables.'
-				. "\n\n" . $data,
-			);
+		if (isset($lines[10]) === false) {
+			throw new \InvalidArgumentException(sprintf("Fio transaction data file is broken. File must define some variables.\n\n%s", $payload));
 		}
 
 		// Meta information parser
-		$line = static fn(string $line): string => explode(';', $line, 2)[1] ?? '';
+		$lineParser = static fn(string $haystack): string => explode(';', $haystack, 2)[1] ?? '';
 
-		$this->accountId = (int) $line($parser[0]);
-		$this->bankId = (int) $line($parser[1]);
-		$this->currency = strtoupper($line($parser[2]));
-		$this->iban = $line($parser[3]);
-		$this->bic = $line($parser[4]);
-		$this->openingBalance = (float) str_replace(',', '.', $line($parser[5]));
-		$this->closingBalance = (float) str_replace(',', '.', $line($parser[6]));
-		$this->dateStart = DateTime::from($line($parser[7]));
-		$this->dateEnd = DateTime::from($line($parser[8]));
-		$this->idFrom = (int) $line($parser[9]);
-		$this->idTo = (int) $line($parser[10]);
+		$this->accountId = (int) $lineParser($lines[0]);
+		$this->bankId = (int) $lineParser($lines[1]);
+		$this->currency = strtoupper($lineParser($lines[2]));
+		$this->iban = $lineParser($lines[3]);
+		$this->bic = $lineParser($lines[4]);
+		$this->openingBalance = (float) str_replace(',', '.', $lineParser($lines[5]));
+		$this->closingBalance = (float) str_replace(',', '.', $lineParser($lines[6]));
+		$this->dateStart = new \DateTimeImmutable($lineParser($lines[7]));
+		$this->dateEnd = new \DateTimeImmutable($lineParser($lines[8]));
+		$this->idFrom = (int) $lineParser($lines[9]);
+		$this->idTo = (int) $lineParser($lines[10]);
 
-		for ($i = 13; isset($parser[$i]); $i++) { // Transactions
-			$this->transactions[] = new Transaction($parser[$i]);
+		for ($i = 13; isset($lines[$i]); $i++) { // Transactions
+			$this->transactions[] = new Transaction($lines[$i]);
 		}
 	}
 
 
 	/**
-	 * @return Transaction[]
+	 * @return array<int, Transaction>
 	 */
 	public function getTransactions(): array
 	{

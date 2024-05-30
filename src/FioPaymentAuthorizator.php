@@ -60,7 +60,7 @@ final class FioPaymentAuthorizator extends BaseAuthorizator
 		}
 
 		$url = sprintf(
-			'https://www.fio.cz/ib_api/rest/periods/%s/%s/%s/transactions.csv',
+			'https://fioapi.fio.cz/ib_api/rest/periods/%s/%s/%s/transactions.csv',
 			$this->privateKey,
 			sprintf('%d-%d-01', $year, $month),
 			date('Y-m-d'),
